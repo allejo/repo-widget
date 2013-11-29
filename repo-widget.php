@@ -110,6 +110,25 @@ function repo_widget_builder($attributes)
 }
 
 /**
+ * @param $url
+ * @return array|mixed
+ */
+function get_json($url)
+{
+    $curl_handler = curl_init();
+    curl_setopt($curl_handler, CURLOPT_URL, $url);
+    curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($curl_handler, CURLOPT_USERAGENT, 'curl/' . $t_vers['version']);
+
+    $json = curl_exec($curl_handler);
+
+    curl_close($curl_handler);
+
+    return json_decode($json, true);
+}
+
+/**
  * Make a JSON request and get required information
  *
  * @param $host string The respective host to make the JSON query to
@@ -134,13 +153,13 @@ function repo_widget_json($host, $array)
         $repo_location = $array['user'] . '/' . $array['repo']; // The user and repository name combination used to build the URL
 
         // Retrieve information about the repository itself
-        $repo_data  = json_decode(file_get_contents("https://api.github.com/repos/" . $repo_location), TRUE);
+        $repo_data  = get_json("https://api.github.com/repos/" . $repo_location);
 
         // Retrieve the last commit
-        $commit_sha = json_decode(file_get_contents("https://api.github.com/repos/" . $repo_location . "/git/refs/heads/master"), TRUE);
+        $commit_sha = get_json("https://api.github.com/repos/" . $repo_location . "/git/refs/heads/master");
 
         // Retrieve information about the last commit
-        $commit     = json_decode(file_get_contents("https://api.github.com/repos/" . $repo_location . "/git/commits/" . $commit_sha['object']['sha']), TRUE);
+        $commit     = get_json("https://api.github.com/repos/" . $repo_location . "/git/commits/" . $commit_sha['object']['sha']);
 
         // We'll build a DateTime object from our last commit time
         $date       = new DateTime($commit['author']['date']);
