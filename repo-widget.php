@@ -53,6 +53,7 @@ function repo_widget_builder($attributes)
         'size' => 'normal',
         'commits' => '1',
         'theme' => 'github',
+        'target' => '_blank',
         'travis' => ''
     ), $attributes));
 
@@ -69,7 +70,7 @@ function repo_widget_builder($attributes)
             $widget =
                 sprintf('<div class="repo-widget github normal">') .
                 sprintf('    <div class="header">') .
-                sprintf('        <a href="%s">%s</a>', $data['url'], $data['name']);
+                sprintf('        <a href="%s" target="%s">%s</a>', $data['url'], $target, $data['name']);
 
             // Add the Travis build status if it's available
             if ($travis != '')
@@ -94,7 +95,7 @@ function repo_widget_builder($attributes)
                 sprintf('    <ul class="commits">') .
                 sprintf('        <li>') .
                 sprintf('            <div class="info">') .
-                sprintf('                <p class="commit">latest commit <a href="%s">%s</a></p>', $data['last_commit']['url'], $data['last_commit']['hash']) .
+                sprintf('                <p class="commit">latest commit <a href="%s" target="%s">%s</a></p>', $data['last_commit']['url'], $target, $data['last_commit']['hash']) .
                 sprintf('                <p class="timestamp">%s</p>', $data['last_commit']['date']) .
                 sprintf('                <div style="clear:both"></div>') .
                 sprintf('            </div>') .
@@ -173,7 +174,7 @@ function repo_widget_json($host, $array)
         $repo_information['ssh_url'] = $repo_data['ssh_url'];
         $repo_information['description'] = $repo_data['description'];
         $repo_information['last_commit']['hash'] = substr($commit_sha['object']['sha'], 0, 10);
-        $repo_information['last_commit']['url'] = $commit['html_url'];
+        $repo_information['last_commit']['url'] = "https://github.com/" . $repo_location . "/commit/" . $commit_sha['object']['sha'];
         $repo_information['last_commit']['date'] = $date->format("D M j G:i:s Y");
         $repo_information['last_commit']['message'] = $commit['message'];
         $repo_information['last_commit']['author'] = $commit['author']['name'];
